@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy 4th Birthday Anushka!</title>
+    <style>
+        :root {
+            --primary-pink: #ff9bb3;
+            --dark-pink: #ff6b8b;
+            --light-pink: #ffe5ec;
+        }
+
+        body {
+            background-color: var(--light-pink);
+            margin: 0;
+            font-family: 'Comic Sans MS', cursive;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(to right, var(--primary-pink), var(--dark-pink));
+            color : white
+            padding : 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            to { transform: translateY(-5px); }
+        }
+
+        /* Floating animals */
+        .animal {
+            position: absolute;
+            font-size: 40px;
+            animation: float 5s infinite ease-in-out;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* Gift box */
+        .gift-box {
+            width: 150px;
+            height: 150px;
+            background: #ff6b8b;
+            margin: 20px auto;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+
+        .gift-lid {
+            width: 150px;
+            height: 40px;
+            background: #ff9bb3;
+            position: absolute;
+            top: -20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .teddy-bear {
+            font-size: 60px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .gift-box.open .gift-lid {
+            transform: translateY(-60px) rotate(20deg);
+            opacity: 0;
+        }
+
+        .gift-box.open .teddy-bear {
+            opacity: 1;
+        }
+
+        /* Games container */
+        .games {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px;
+        }
+
+        .game {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Balloon pop game */
+        .balloon {
+            width: 50px;
+            height: 60px;
+            background: var(--primary-pink);
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+            animation: floatUp 5s linear forwards;
+        }
+
+        @keyframes floatUp {
+            to { transform: translateY(-100vh); }
+        }
+
+        /* Memory game */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .memory-card {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-pink);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .memory-card.flipped {
+            background: white;
+            transform: rotateY(180deg);
+        }
+
+        button {
+            background: var(--dark-pink);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Happy 4th Birthday Anushka!</h1>
+        <p>You're the best little sister! 🎉</p>
+    </header>
+
+    <div style="background: white; padding: 20px; margin: 20px; border-radius: 10px;">
+        <p>Dear Anushka,</p>
+        <p>Happy birthday to the most amazing 4-year-old!</p>
+        <p>We love you so much! ❤️</p>
+    </div>
+
+    <div>
+        <h2>Your Birthday Gift!</h2>
+        <div class="gift-box" id="giftBox">
+            <div class="gift-lid"></div>
+            <div class="teddy-bear">🧸</div>
+        </div>
+        <p id="giftText">Click the box to open your gift!</p>
+    </div>
+
+    <div class="games">
+        <div class="game">
+            <h3>🎈 Balloon Pop Game</h3>
+            <p>Click the balloons to pop them!</p>
+            <div style="height: 300px; position: relative; overflow: hidden; border-radius: 10px; background: #f0f8ff;">
+                <div id="balloonGame"></div>
+            </div>
+            <p>Score: <span id="score">0</span></p>
+            <button id="startBalloons">Start Game</button>
+        </div>
+
+        <div class="game">
+            <h3>🐶 Memory Game</h3>
+            <p>Find matching pairs of animals!</p>
+            <div class="memory-grid" id="memoryGame"></div>
+            <button id="startMemory">Start Game</button>
+        </div>
+    </div>
+
+    <script>
+        // Add floating animals
+        const animals = ['🐶', '🐱', '🐻', '🐰', '🦊', '🐯', '🦁', '🐮'];
+        for (let i = 0; i < 12; i++) {
+            const animal = document.createElement('div');
+            animal.className = 'animal';
+            animal.textContent = animals[Math.floor(Math.random() * animals.length)];
+            animal.style.left = `${Math.random() * 100}vw`;
+            animal.style.top = `${Math.random() * 100}vh`;
+            animal.style.animationDuration = `${Math.random() * 4 + 3}s`;
+            animal.style.animationDelay = `${Math.random() * 3}s`;
+            document.body.appendChild(animal);
+        }
+
+        // Gift box
+        const giftBox = document.getElementById('giftBox');
+        const giftText = document.getElementById('giftText');
+        
+        giftBox.addEventListener('click', function() {
+            this.classList.add('open');
+            giftText.textContent = "Yay! It's a teddy bear! 🧸";
+        });
+
+        // Balloon pop game
+        const balloonGame = document.getElementById('balloonGame');
+        const scoreDisplay = document.getElementById('score');
+        let score = 0;
+        let balloonInterval;
+
+        function createBalloon() {
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.style.left = `${Math.random() * 90 + 5}%`;
+            balloon.style.backgroundColor = getRandomColor();
+            
+            balloon.addEventListener('click', function() {
+                this.remove();
+                score++;
+                scoreDisplay.textContent = score;
+                // Pop sound
+                new Audio('https://www.soundjay.com/mechanical/sounds/bubble-pop-1.mp3').play();
+            });
+            
+            balloonGame.appendChild(balloon);
+        }
+
+        function getRandomColor() {
+            const colors = ['#ff6b8b', '#ffb6c1', '#ff69b4', '#f8bbd0', '#f48fb1'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        document.getElementById('startBalloons').addEventListener('click', function() {
+            score = 0;
+            scoreDisplay.textContent = '0';
+            balloonGame.innerHTML = '';
+            balloonInterval = setInterval(createBalloon, 800);
+            setTimeout(() => clearInterval(balloonInterval), 20000); // Stop after 20 seconds
+        });
+
+        // Memory game
+        const memoryGame = document.getElementById('memoryGame');
+        const memoryCards = ['🐶', '🐱', '🐻', '🐰', '🦊', '🐯', '🦁', '🐮'];
+        let flippedCards = [];
+        let matchedPairs = 0;
+
+        function createMemoryGame() {
+            memoryGame.innerHTML = '';
+            matchedPairs = 0;
+            const cards = [...memoryCards, ...memoryCards].sort(() => Math.random() - 0.5);
+            
+            cards.forEach(emoji => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.textContent = '🎁';
+                card.dataset.emoji = emoji;
+                
+                card.addEventListener('click', function() {
+                    if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
+                        this.textContent = this.dataset.emoji;
+                        this.classList.add('flipped');
+                        flippedCards.push(this);
+                        
+                        if (flippedCards.length === 2) {
+                            checkForMatch();
+                        }
+                    }
+                });
+                
+                memoryGame.appendChild(card);
+            });
+        }
+
+        function checkForMatch() {
+            const [card1, card2] = flippedCards;
+            
+            if (card1.dataset.emoji === card2.dataset.emoji) {
+                matchedPairs++;
+                flippedCards = [];
+                if (matchedPairs === memoryCards.length) {
+                    setTimeout(() => alert("You won! Great job Anushka!"), 500);
+                }
+            } else {
+                setTimeout(() => {
+                    card1.textContent = '🎁';
+                    card2.textContent = '🎁';
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    flippedCards = [];
+                }, 1000);
+            }
+        }
+
+        document.getElementById('startMemory').addEventListener('click', createMemoryGame);
+    </script>
+</body>
+</html>
